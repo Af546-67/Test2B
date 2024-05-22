@@ -1,0 +1,172 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Booking Place for Your Dinner</title>
+    <style>
+        body {
+            font-family: 'Gill Sans', 'Gill Sans MT', Calibri, 'Trebuchet MS', sans-serif sans-serif;
+            background-color: #f1f2ff;
+        }
+        .container {
+            margin: 50px auto;
+            max-width: 500px;
+            background-color: #2679ac;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0px 0px 10px 0px rgba(189, 10, 10, 0.1);
+        }
+        input[type="text"], input[type="tel"] {
+            width: 100%;
+            padding: 10px;
+            margin-bottom: 20px; 
+            border: 1px solid #02342f;
+            border-radius: 5px;
+            transition: border-color 0.3s ease;
+        }
+        input[type="radio"] {
+            margin-right: 5px;
+        }
+        .error {
+            border-color: rgb(11, 0, 60);
+        }
+        .button {
+            background-color: #f1f5f1;
+            color: rgb(11, 36, 73);
+            padding: 10px 20px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+        .button:hover {
+            background-color: #3e543f;
+        }
+        .message {
+            margin-top: 20px; 
+            color: rgb(220, 10, 10);
+            font-style: Bold;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h2>Booking Place for Your Dinner!</h2>
+        <form id="bookingForm">
+            <label for="name">Name:</label>
+            <input type="text" id="name" name="name" required>
+            <label for="phone">Phone number:</label>
+            <input type="tel" id="phone" name="phone" required>
+            <label for="options">What would you like to have with us?:</label><br>
+            <br>
+            <input type="checkbox" id="starters" name="option" value="Starters">
+            <label for="starters"> Starters</label>
+            <input type="checkbox" id="mainCourse" name="option" value="Main Course">
+            <label for="mainCourse"> Main Course</label>
+            <input type="checkbox" id="desserts" name="option" value="Desserts">
+            <label for="desserts"> Desserts</label>
+            <input type="checkbox" id="drinks" name="option" value="Drinks">
+            <label for="drinks"> Drinks</label><br>
+            <br> 
+            <label>Select a time:</label><br>
+            <br>
+            <input type="radio" id="time0500" name="time" value="05:00">
+            <label for="time0500">05:00 PM</label><br>
+            <input type="radio" id="time0600" name="time" value="06:00">
+            <label for="time0600">06:00 PM</label><br>
+            <input type="radio" id="time0700" name="time" value="07:00">
+            <label for="time0700">07:00 PM</label><br>
+            <input type="radio" id="time0800" name="time" value="08:00">
+            <label for="time0800">08:00 PM</label><br>
+            <br> 
+            <button type="submit" class="button" disabled>Submit</button>
+            <div class="message" id="errorMessage"></div>
+            <div id="reservationDetails" style="display: none;"></div>
+        </form>
+    </div>
+
+    <script>
+        const form = document.getElementById('bookingForm');
+        const nameInput = document.getElementById('name');
+        const phoneInput = document.getElementById('phone');
+        const submitButton = document.querySelector('.button');
+        const errorMessage = document.getElementById('errorMessage');
+        const reservationDetails = document.getElementById('reservationDetails');
+
+        function validateName() {
+            const nameValue = nameInput.value.trim();
+            if (nameValue === '') {
+                nameInput.classList.add('error');
+                errorMessage.textContent = 'Error: Name is empty.';
+                return false;
+            } else if (!nameValue.includes(' ')) {
+                nameInput.classList.add('error');
+                errorMessage.textContent = 'Error: First and last names are required.';
+                return false;
+            } else {
+                nameInput.classList.remove('error');
+                errorMessage.textContent = '';
+                return true;
+            }
+        }
+
+        function validatePhone() {
+            const phoneValue = phoneInput.value.trim();
+            if (phoneValue === '') {
+                phoneInput.classList.add('error');
+                errorMessage.textContent = 'Error: Phone number is empty.';
+                return false;
+            } else if (!/^\d{6}/.test(phoneValue)) {
+                phoneInput.classList.add('error');
+                errorMessage.textContent = 'Error: Phone number must start with numbers and have exactly 6 characters.';
+                return false;
+            } else {
+                phoneInput.classList.remove('error');
+                errorMessage.textContent = '';
+                return true;
+            }
+        }
+
+        function generateReservationMessage() {
+            const name = nameInput.value.trim();
+            const phone = phoneInput.value.trim();
+            const options = Array.from(document.querySelectorAll('input[name="option"]:checked')).map(option => option.value).join(', ');
+            const time = document.querySelector('input[name="time"]:checked').value;
+
+            const message = `Reservation Details:\nName: ${name}\nPhone Number: ${phone}\nOptions: ${options}\nTime: ${time}`;
+            return message;
+        }
+
+        nameInput.addEventListener('blur', validateName);
+        phoneInput.addEventListener('blur', validatePhone);
+
+        form.addEventListener('submit', function(event) {
+            event.preventDefault();
+            if (validateName() && validatePhone()) {
+                const reservationMessage = generateReservationMessage();
+                reservationDetails.textContent = reservationMessage;
+                reservationDetails.style.display = 'block';
+
+                errorMessage.textContent = 'Form submitted successfully!';
+                errorMessage.style.color = 'green';
+                setTimeout(() => {
+                    errorMessage.textContent = '';
+                    nameInput.value = '';
+                    phoneInput.value = '';
+                    submitButton.disabled = true;
+                    reservationDetails.style.display = 'none';
+                }, 3000);
+            }
+        });
+
+        form.addEventListener('input', function() {
+            if (validateName() && validatePhone()) {
+                submitButton.disabled = false;
+            } else {
+                submitButton.disabled = true;
+            }
+        });
+    </script>
+</body>
+</html>
